@@ -20,10 +20,10 @@
                     },
                     colors: { 
                         flower: { 
-                            green: '#9CAF88',   /* Шалфей */
-                            dark: '#3F4F44',    /* Темно-зеленый текст */
-                            pink: '#F4E1D2',    /* Пудра */
-                            bg: '#FCFBF9'       /* Молочный фон */
+                            green: '#9CAF88',   
+                            dark: '#3F4F44',    
+                            pink: '#F4E1D2',    
+                            bg: '#FCFBF9'       
                         } 
                     }
                 }
@@ -33,15 +33,12 @@
 
     <style>
         body { background-color: #FCFBF9; color: #3F4F44; overflow-x: hidden; }
-        
-        /* Скроллбар */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #FCFBF9; }
         ::-webkit-scrollbar-thumb { background: #9CAF88; border-radius: 10px; }
-
-        /* Эффект стекла */
-        .glass-nav { background: rgba(252, 251, 249, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(156, 175, 136, 0.1); }
-
+        
+        .glass-nav { background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(156, 175, 136, 0.1); }
+        
         /* Шторки */
         .sidebar { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .sidebar-open { transform: translateX(0) !important; }
@@ -50,9 +47,10 @@
         .overlay.active { opacity: 1; pointer-events: auto; }
         body.no-scroll { overflow: hidden; }
         
-        /* Анимация кнопок */
-        .btn-flower { transition: all 0.3s ease; }
-        .btn-flower:active { transform: scale(0.95); }
+        /* Мобильное меню */
+        #mobile-menu { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        .menu-hidden { transform: translateY(-150%); opacity: 0; pointer-events: none; }
+        .menu-visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -62,9 +60,9 @@
         <p class="text-xs uppercase tracking-[0.3em] mt-2 text-flower-green">С любовью в каждом лепестке</p>
     </div>
 
-    <header class="fixed w-full z-50 glass-nav top-0">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="font-serif text-2xl font-bold tracking-wide flex items-center gap-2">
+    <header class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center relative z-50 bg-[#FCFBF9]/90 backdrop-blur-md">
+            <a href="#" class="font-serif text-2xl font-bold tracking-wide flex items-center gap-2 text-flower-dark z-50">
                 <i class="fas fa-seedling text-flower-green"></i> 
                 <span>Family Flowers</span>
             </a>
@@ -75,35 +73,46 @@
                 <a href="#about" class="hover:text-flower-green transition">О нас</a>
             </nav>
             
-            <div class="flex items-center gap-4">
-                <a href="https://wa.me/77008016460" class="text-flower-dark hover:text-flower-green transition"><i class="fab fa-whatsapp text-xl"></i></a>
+            <div class="flex items-center gap-5 z-50">
+                <a href="https://wa.me/77008016460" class="text-flower-dark hover:text-flower-green transition hidden md:block"><i class="fab fa-whatsapp text-xl"></i></a>
                 
                 <button onclick="toggleCart()" class="relative text-flower-dark hover:text-flower-green transition">
                     <i class="fas fa-shopping-basket text-xl"></i>
                     <span id="cart-count" class="absolute -top-2 -right-2 bg-flower-green text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full transform scale-0 transition-transform duration-300">0</span>
                 </button>
+
+                <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden text-flower-dark text-2xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
+        </div>
+
+        <div id="mobile-menu" class="absolute top-full left-0 w-full bg-[#FCFBF9] border-b border-flower-green/20 shadow-xl menu-hidden -z-10 flex flex-col items-center py-10 gap-6">
+            <a href="#home" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">Главная</a>
+            <a href="#catalog" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">Букеты</a>
+            <a href="#about" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">О нас</a>
+            <a href="https://wa.me/77008016460" class="mt-4 flex items-center gap-2 bg-flower-green text-white px-6 py-3 rounded-full"><i class="fab fa-whatsapp"></i> Написать нам</a>
         </div>
     </header>
 
-    <section id="home" class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+    <section id="home" class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1490750967868-58cb75069ed6?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-90" alt="Цветы фон">
-            <div class="absolute inset-0 bg-white/20 backdrop-blur-[2px]"></div>
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#FCFBF9]"></div>
+            <img src="https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Цветы фон">
+            <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#FCFBF9] via-transparent to-transparent"></div>
         </div>
 
         <div class="relative z-10 text-center px-6 max-w-3xl" data-aos="zoom-in" data-aos-duration="1200">
-            <div class="inline-block border border-flower-dark/30 rounded-full px-5 py-1 mb-6 bg-white/50 backdrop-blur-sm">
+            <div class="inline-block border border-flower-dark/30 rounded-full px-5 py-1 mb-6 bg-white/60 backdrop-blur-md shadow-sm">
                 <span class="text-xs uppercase tracking-[0.2em] font-bold text-flower-dark">Свежие поставки каждый день</span>
             </div>
-            <h1 class="font-serif text-5xl md:text-7xl mb-6 text-flower-dark leading-tight">
+            <h1 class="font-serif text-5xl md:text-7xl mb-6 text-flower-dark leading-tight drop-shadow-sm">
                 Дарите чувства <br> <i class="font-light text-flower-green">красиво</i>
             </h1>
-            <p class="text-lg text-gray-700 mb-10 font-light max-w-xl mx-auto">
+            <p class="text-lg text-gray-800 mb-10 font-medium max-w-xl mx-auto leading-relaxed">
                 Авторские букеты с доставкой по городу. Мы создаем композиции, которые говорят о любви громче слов.
             </p>
-            <a href="#catalog" class="btn-flower inline-block bg-flower-dark text-white px-10 py-4 rounded-full font-medium tracking-wider hover:bg-flower-green shadow-lg hover:shadow-xl transition">
+            <a href="#catalog" class="btn-flower inline-block bg-flower-dark text-white px-10 py-4 rounded-full font-medium tracking-wider hover:bg-flower-green shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
                 Выбрать букет
             </a>
         </div>
@@ -112,25 +121,25 @@
     <section class="py-16 bg-[#FCFBF9]">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div class="p-4" data-aos="fade-up">
-                    <div class="w-16 h-16 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-truck text-2xl"></i></div>
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up">
+                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-truck text-xl"></i></div>
                     <h3 class="font-serif text-lg mb-1">Быстрая доставка</h3>
-                    <p class="text-xs text-gray-500">Доставим за 60 минут</p>
+                    <p class="text-xs text-gray-500">За 60 минут</p>
                 </div>
-                <div class="p-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-16 h-16 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-leaf text-2xl"></i></div>
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-leaf text-xl"></i></div>
                     <h3 class="font-serif text-lg mb-1">Всегда свежие</h3>
-                    <p class="text-xs text-gray-500">Поставки каждое утро</p>
+                    <p class="text-xs text-gray-500">Поставки утром</p>
                 </div>
-                <div class="p-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-16 h-16 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-camera text-2xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Фото перед отправкой</h3>
-                    <p class="text-xs text-gray-500">Высылаем в WhatsApp</p>
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-camera text-xl"></i></div>
+                    <h3 class="font-serif text-lg mb-1">Фото отчет</h3>
+                    <p class="text-xs text-gray-500">Перед отправкой</p>
                 </div>
-                <div class="p-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-16 h-16 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-heart text-2xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Открытка в подарок</h3>
-                    <p class="text-xs text-gray-500">Подпишем ваши слова</p>
+                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-heart text-xl"></i></div>
+                    <h3 class="font-serif text-lg mb-1">Открытка</h3>
+                    <p class="text-xs text-gray-500">Бесплатно к заказу</p>
                 </div>
             </div>
         </div>
@@ -146,8 +155,8 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
                 
                 <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4">
-                        <img src="https://images.unsplash.com/photo-1563241527-3004b7be0fee?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
+                        <img src="https://images.unsplash.com/photo-1582794543139-8ac92a944d21?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
                             <i class="fas fa-plus"></i>
                         </div>
@@ -156,8 +165,8 @@
                     <p class="text-flower-green font-bold mt-1 product-price">15 000 ₸</p>
                     
                     <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1563241527-3004b7be0fee?q=80&w=800&auto=format&fit=crop</div>
-                        <div class="data-desc">Нежный букет из пионовидных роз и эвкалипта. Идеально подходит для романтического свидания или признания в любви.</div>
+                        <div class="data-img">https://images.unsplash.com/photo-1582794543139-8ac92a944d21?q=80&w=800&auto=format&fit=crop</div>
+                        <div class="data-desc">Нежный букет из пионовидных роз. Идеально подходит для романтического свидания или признания в любви.</div>
                         <div class="data-specs">
                             <p><strong>Состав:</strong> 9 пионовидных роз, эвкалипт</p>
                             <p><strong>Упаковка:</strong> Крафт бумага / Лента</p>
@@ -167,8 +176,8 @@
                 </div>
 
                 <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4">
-                        <img src="https://images.unsplash.com/photo-1596627689972-297d28703a93?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
+                        <img src="https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
                             <i class="fas fa-plus"></i>
                         </div>
@@ -176,7 +185,7 @@
                     <h3 class="font-serif text-lg text-flower-dark product-title">101 Белая Роза</h3>
                     <p class="text-flower-green font-bold mt-1 product-price">85 000 ₸</p>
                     <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1596627689972-297d28703a93?q=80&w=800&auto=format&fit=crop</div>
+                        <div class="data-img">https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=800&auto=format&fit=crop</div>
                         <div class="data-desc">Классика, которая никогда не выйдет из моды. Огромный букет из 101 отборной белой розы.</div>
                         <div class="data-specs">
                             <p><strong>Состав:</strong> 101 роза (60 см)</p>
@@ -187,7 +196,7 @@
                 </div>
 
                 <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
                         <img src="https://images.unsplash.com/photo-1520763185298-1b434c919102?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         <div class="absolute top-3 left-3 bg-flower-green text-white text-[10px] font-bold px-2 py-1 rounded">ХИТ</div>
                         <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
@@ -208,7 +217,7 @@
                 </div>
 
                 <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
                         <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
                         <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
                             <i class="fas fa-plus"></i>
@@ -256,9 +265,6 @@
             </div>
             <div class="relative" data-aos="fade-left">
                 <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop" class="rounded-3xl shadow-xl w-full object-cover h-[400px]">
-                <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-lg max-w-[200px]">
-                    <p class="font-serif italic text-flower-dark">"Цветы делают людей счастливее."</p>
-                </div>
             </div>
         </div>
     </section>
@@ -331,7 +337,25 @@
         AOS.init({ once: true, offset: 50, duration: 1000 });
         window.addEventListener('load', () => { setTimeout(() => { document.getElementById('preloader').style.opacity = '0'; setTimeout(() => { document.getElementById('preloader').style.display = 'none'; }, 500); }, 1000); });
 
-        // ЛОГИКА
+        // ЛОГИКА МЕНЮ
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.querySelector('#hamburger-btn i');
+            
+            if (menu.classList.contains('menu-hidden')) {
+                menu.classList.remove('menu-hidden');
+                menu.classList.add('menu-visible');
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                menu.classList.add('menu-hidden');
+                menu.classList.remove('menu-visible');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            }
+        }
+
+        // ЛОГИКА КОРЗИНЫ И ТОВАРОВ
         const sidebarState = { cart: false, details: false };
         let cart = JSON.parse(localStorage.getItem('familyFlowersCart')) || [];
         updateCartUI();
@@ -413,7 +437,6 @@
             const totalEl = document.getElementById('cart-total');
             const countBadge = document.getElementById('cart-count');
             
-            // Бейджик
             const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
             countBadge.innerText = totalQty;
             countBadge.style.transform = totalQty > 0 ? 'scale(1)' : 'scale(0)';
