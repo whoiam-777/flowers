@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Family Flowers | Бесплатная доставка цветов</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA | Flowers & Emotions</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
@@ -16,15 +17,18 @@
                 extend: {
                     fontFamily: { 
                         serif: ['"Playfair Display"', 'serif'], 
-                        sans: ['"Montserrat"', 'sans-serif'] 
+                        sans: ['"Lato"', 'sans-serif'] 
                     },
                     colors: { 
-                        flower: { 
-                            green: '#9CAF88',   
-                            dark: '#3F4F44',    
-                            pink: '#F4E1D2',    
-                            bg: '#FCFBF9'       
-                        } 
+                        aura: {
+                            base: '#FDFBF7',   /* Кремовый фон */
+                            dark: '#2D2A26',   /* Угольный текст */
+                            accent: '#D4A373', /* Золотистый песок */
+                            rose: '#E5B8B7'    /* Пыльная роза */
+                        }
+                    },
+                    backgroundImage: {
+                        'noise': "url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.05%22/%3E%3C/svg%3E')",
                     }
                 }
             }
@@ -32,447 +36,396 @@
     </script>
 
     <style>
-        body { background-color: #FCFBF9; color: #3F4F44; overflow-x: hidden; }
+        body { 
+            background-color: #FDFBF7; 
+            color: #2D2A26; 
+            cursor: none; /* Скрываем стандартный курсор */
+        }
+        
+        /* Зернистость на фоне (эффект дорогой бумаги) */
+        .grain-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 50;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+        }
+
+        /* Кастомный курсор */
+        .cursor-dot, .cursor-circle {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; pointer-events: none; z-index: 9999;
+        }
+        .cursor-dot { width: 8px; height: 8px; background: #2D2A26; }
+        .cursor-circle { 
+            width: 40px; height: 40px; border: 1px solid #2D2A26; 
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+        
+        /* Состояние наведения */
+        body.hovered .cursor-circle { width: 60px; height: 60px; background-color: rgba(229, 184, 183, 0.3); border-color: transparent; }
+
+        /* Форма АРКИ для картинок */
+        .arch-image { border-radius: 200px 200px 0 0; }
+        
+        /* Плавный скролл */
+        html.lenis { height: auto; }
+        
+        /* Текст, который "бежит" */
+        .marquee-container { overflow: hidden; white-space: nowrap; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Стили скроллбара */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #FCFBF9; }
-        ::-webkit-scrollbar-thumb { background: #9CAF88; border-radius: 10px; }
-        
-        .glass-nav { background: rgba(252, 251, 249, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(156, 175, 136, 0.1); }
-        
-        /* Шторки */
-        .sidebar { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .sidebar-open { transform: translateX(0) !important; }
-        .sidebar-closed { transform: translateX(100%); }
-        .overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .overlay.active { opacity: 1; pointer-events: auto; }
-        body.no-scroll { overflow: hidden; }
-        
-        /* Мобильное меню */
-        #mobile-menu { transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
-        .menu-hidden { transform: translateY(-150%); opacity: 0; pointer-events: none; }
-        .menu-visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        ::-webkit-scrollbar-track { background: #FDFBF7; }
+        ::-webkit-scrollbar-thumb { background: #D4A373; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="antialiased">
 
-    <div id="preloader" class="fixed inset-0 bg-[#FCFBF9] z-[9999] flex flex-col justify-center items-center transition-opacity duration-500">
-        <h1 class="font-serif text-4xl text-flower-dark italic animate-pulse">Family Flowers</h1>
-        <p class="text-xs uppercase tracking-[0.3em] mt-2 text-flower-green">С любовью в каждом лепестке</p>
+    <div class="grain-overlay"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-circle"></div>
+
+    <div id="preloader" class="fixed inset-0 z-[100] bg-[#FDFBF7] flex flex-col items-center justify-center">
+        <h1 class="font-serif text-5xl italic text-aura-dark overflow-hidden">
+            <span class="inline-block transform translate-y-full transition-transform duration-1000 delay-300 reveal-text">Aura</span>
+        </h1>
+        <p class="font-sans text-xs tracking-[0.3em] uppercase mt-4 opacity-0 fade-in">Floristry Art</p>
     </div>
 
-    <header class="fixed w-full z-50 glass-nav top-0 transition-all duration-300">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center relative z-50 bg-[#FCFBF9]/90 backdrop-blur-md">
-            <a href="#" class="font-serif text-2xl font-bold tracking-wide flex items-center gap-2 text-flower-dark z-50">
-                <i class="fas fa-seedling text-flower-green"></i> 
-                <span>Family Flowers</span>
+    <nav class="fixed top-0 w-full z-40 py-6 mix-blend-difference text-aura-dark transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="font-serif text-2xl font-bold tracking-tighter hover-trigger">AURA.</a>
+            
+            <div class="hidden md:flex gap-12 font-sans text-xs tracking-[0.2em] uppercase">
+                <a href="#collection" class="hover-trigger relative after:content-[''] after:absolute after:w-0 after:h-[1px] after:bg-current after:bottom-0 after:left-0 after:transition-all hover:after:w-full">Коллекция</a>
+                <a href="#philosophy" class="hover-trigger relative after:content-[''] after:absolute after:w-0 after:h-[1px] after:bg-current after:bottom-0 after:left-0 after:transition-all hover:after:w-full">Философия</a>
+                <a href="#contacts" class="hover-trigger relative after:content-[''] after:absolute after:w-0 after:h-[1px] after:bg-current after:bottom-0 after:left-0 after:transition-all hover:after:w-full">Контакты</a>
+            </div>
+
+            <a href="https://wa.me/77056053087" class="hover-trigger hidden md:block border border-aura-dark/30 px-6 py-2 rounded-full text-xs uppercase tracking-widest hover:bg-aura-dark hover:text-white transition duration-500">
+                Заказать
             </a>
             
-            <nav class="hidden md:flex gap-8 text-xs font-bold uppercase tracking-widest text-flower-dark">
-                <a href="#home" class="hover:text-flower-green transition">Главная</a>
-                <a href="#catalog" class="hover:text-flower-green transition">Букеты</a>
-                <a href="#about" class="hover:text-flower-green transition">О нас</a>
-            </nav>
-            
-            <div class="flex items-center gap-5 z-50">
-                <a href="https://wa.me/77008016460" class="text-flower-dark hover:text-flower-green transition hidden md:block"><i class="fab fa-whatsapp text-xl"></i></a>
-                
-                <button onclick="toggleCart()" class="relative text-flower-dark hover:text-flower-green transition">
-                    <i class="fas fa-shopping-basket text-xl"></i>
-                    <span id="cart-count" class="absolute -top-2 -right-2 bg-flower-green text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full transform scale-0 transition-transform duration-300">0</span>
-                </button>
-
-                <button id="hamburger-btn" onclick="toggleMobileMenu()" class="md:hidden text-flower-dark text-2xl focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
+            <button class="md:hidden hover-trigger"><i class="fas fa-bars text-xl"></i></button>
         </div>
+    </nav>
 
-        <div id="mobile-menu" class="absolute top-full left-0 w-full bg-[#FCFBF9] border-b border-flower-green/20 shadow-xl menu-hidden -z-10 flex flex-col items-center py-10 gap-6">
-            <a href="#home" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">Главная</a>
-            <a href="#catalog" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">Букеты</a>
-            <a href="#about" class="text-xl font-serif text-flower-dark hover:text-flower-green" onclick="toggleMobileMenu()">О нас</a>
-            <a href="https://wa.me/77008016460" class="mt-4 flex items-center gap-2 bg-flower-green text-white px-6 py-3 rounded-full"><i class="fab fa-whatsapp"></i> Написать нам</a>
-        </div>
-    </header>
-
-    <section id="home" class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
-        <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1507290439931-a861b5a38200?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover opacity-80" alt="Цветы фон">
-            <div class="absolute inset-0 bg-white/30 backdrop-blur-[1px]"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#FCFBF9] via-transparent to-transparent"></div>
-        </div>
-
-        <div class="relative z-10 text-center px-6 max-w-3xl" data-aos="zoom-in" data-aos-duration="1200">
-            <div class="inline-block border border-flower-dark/30 rounded-full px-5 py-1 mb-6 bg-white/60 backdrop-blur-md shadow-sm">
-                <span class="text-xs uppercase tracking-[0.2em] font-bold text-flower-dark">Свежие поставки каждый день</span>
-            </div>
-            <h1 class="font-serif text-5xl md:text-7xl mb-6 text-flower-dark leading-tight drop-shadow-sm">
-                Дарите чувства <br> <i class="font-light text-flower-green">красиво</i>
+    <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <p class="font-sans text-xs md:text-sm tracking-[0.4em] uppercase text-aura-dark/60 mb-6 animate-fade-up">Est. 2026</p>
+            <h1 class="font-serif text-6xl md:text-9xl text-aura-dark leading-[0.9] mb-8">
+                <span class="block overflow-hidden"><span class="block hero-reveal">Emotions</span></span>
+                <span class="block overflow-hidden"><span class="block hero-reveal italic text-aura-accent">in Bloom</span></span>
             </h1>
-            <p class="text-lg text-gray-800 mb-10 font-medium max-w-xl mx-auto leading-relaxed">
-                Авторские букеты с доставкой по городу. Мы создаем композиции, которые говорят о любви громче слов.
-            </p>
-            <a href="#catalog" class="btn-flower inline-block bg-flower-dark text-white px-10 py-4 rounded-full font-medium tracking-wider hover:bg-flower-green shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
-                Выбрать букет
-            </a>
-        </div>
-    </section>
-
-    <section class="py-16 bg-[#FCFBF9]">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up">
-                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-truck text-xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Быстрая доставка</h3>
-                    <p class="text-xs text-gray-500">За 60 минут</p>
-                </div>
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-leaf text-xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Всегда свежие</h3>
-                    <p class="text-xs text-gray-500">Поставки утром</p>
-                </div>
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-camera text-xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Фото отчет</h3>
-                    <p class="text-xs text-gray-500">Перед отправкой</p>
-                </div>
-                <div class="p-4 bg-white rounded-2xl shadow-sm border border-flower-green/10" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-12 h-12 bg-flower-green/10 rounded-full flex items-center justify-center mx-auto mb-4 text-flower-green"><i class="fas fa-heart text-xl"></i></div>
-                    <h3 class="font-serif text-lg mb-1">Открытка</h3>
-                    <p class="text-xs text-gray-500">Бесплатно к заказу</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="catalog" class="py-20">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-16">
-                <span class="text-flower-green font-bold tracking-widest text-xs uppercase">Наши работы</span>
-                <h2 class="font-serif text-4xl mt-3 text-flower-dark">Популярные букеты</h2>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+            
+            <div class="w-64 h-96 md:w-80 md:h-[500px] mx-auto relative mt-10 arch-image overflow-hidden shadow-2xl hover-trigger group">
+                <img src="images/hero-flower.jpg" onerror="this.src='https://images.unsplash.com/photo-1596562085799-4c1775791c25?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition duration-[2s] ease-out" alt="Main Flower">
                 
-                <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
-                        <img src="https://images.unsplash.com/photo-1582794543139-8ac92a944d21?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                    </div>
-                    <h3 class="font-serif text-lg text-flower-dark product-title">Пионовидное счастье</h3>
-                    <p class="text-flower-green font-bold mt-1 product-price">15 000 ₸</p>
-                    
-                    <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1582794543139-8ac92a944d21?q=80&w=800&auto=format&fit=crop</div>
-                        <div class="data-desc">Нежный букет из пионовидных роз. Идеально подходит для романтического свидания или признания в любви.</div>
-                        <div class="data-specs">
-                            <p><strong>Состав:</strong> 9 пионовидных роз, эвкалипт</p>
-                            <p><strong>Упаковка:</strong> Крафт бумага / Лента</p>
-                            <p><strong>Размер:</strong> M (35 см)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
-                        <img src="https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                    </div>
-                    <h3 class="font-serif text-lg text-flower-dark product-title">101 Белая Роза</h3>
-                    <p class="text-flower-green font-bold mt-1 product-price">85 000 ₸</p>
-                    <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=800&auto=format&fit=crop</div>
-                        <div class="data-desc">Классика, которая никогда не выйдет из моды. Огромный букет из 101 отборной белой розы.</div>
-                        <div class="data-specs">
-                            <p><strong>Состав:</strong> 101 роза (60 см)</p>
-                            <p><strong>Цвет:</strong> Белый</p>
-                            <p><strong>Размер:</strong> XL</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
-                        <img src="https://images.unsplash.com/photo-1520763185298-1b434c919102?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                        <div class="absolute top-3 left-3 bg-flower-green text-white text-[10px] font-bold px-2 py-1 rounded">ХИТ</div>
-                        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                    </div>
-                    <h3 class="font-serif text-lg text-flower-dark product-title">Весенние Тюльпаны</h3>
-                    <p class="text-flower-green font-bold mt-1 product-price">12 500 ₸</p>
-                    <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1520763185298-1b434c919102?q=80&w=800&auto=format&fit=crop</div>
-                        <div class="data-desc">Яркий микс из свежих тюльпанов. Создает весеннее настроение в любой день.</div>
-                        <div class="data-specs">
-                            <p><strong>Состав:</strong> 25 тюльпанов микс</p>
-                            <p><strong>Упаковка:</strong> Дизайнерская пленка</p>
-                            <p><strong>Размер:</strong> S</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="group product-card cursor-pointer" onclick="openDetails(this)">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[4/5] mb-4 shadow-md">
-                        <img src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                        <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur rounded-full w-10 h-10 flex items-center justify-center shadow-md text-flower-dark group-hover:bg-flower-green group-hover:text-white transition">
-                            <i class="fas fa-plus"></i>
-                        </div>
-                    </div>
-                    <h3 class="font-serif text-lg text-flower-dark product-title">Сборный "Прованс"</h3>
-                    <p class="text-flower-green font-bold mt-1 product-price">18 900 ₸</p>
-                    <div class="hidden product-data">
-                        <div class="data-img">https://images.unsplash.com/photo-1561181286-d3fee7d55364?q=80&w=800&auto=format&fit=crop</div>
-                        <div class="data-desc">Атмосферный букет в фиолетовых тонах с лавандой и кустовой розой.</div>
-                        <div class="data-specs">
-                            <p><strong>Состав:</strong> Роза, Лаванда, Лизиантус</p>
-                            <p><strong>Упаковка:</strong> Коробка-шляпа</p>
-                            <p><strong>Размер:</strong> M</p>
-                        </div>
-                    </div>
-                </div>
-
+                <a href="#collection" class="absolute bottom-6 right-6 w-24 h-24 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-[10px] uppercase tracking-widest font-bold animate-[spin_10s_linear_infinite] hover:scale-110 transition">
+                    Explore
+                </a>
             </div>
-            
-            <div class="text-center mt-12">
-                <button class="border border-flower-dark/20 px-8 py-3 rounded-full text-sm font-bold uppercase hover:bg-flower-dark hover:text-white transition">Показать еще</button>
+        </div>
+        
+        <div class="absolute top-1/2 left-10 text-xs font-sans tracking-widest -rotate-90 hidden md:block opacity-40">SCROLL DOWN</div>
+    </section>
+
+    <div class="py-12 border-y border-aura-dark/5 bg-white marquee-container">
+        <div class="marquee-content font-serif text-4xl md:text-6xl italic text-aura-dark/20">
+            Fresh Flowers &nbsp;•&nbsp; Unique Design &nbsp;•&nbsp; Pure Emotions &nbsp;•&nbsp; Fast Delivery &nbsp;•&nbsp; 
+            Fresh Flowers &nbsp;•&nbsp; Unique Design &nbsp;•&nbsp; Pure Emotions &nbsp;•&nbsp; Fast Delivery &nbsp;•&nbsp;
+        </div>
+    </div>
+
+    <section id="philosophy" class="py-24 md:py-32">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center gap-16">
+                <div class="w-full md:w-1/2 relative">
+                    <div class="arch-image overflow-hidden h-[600px] w-full md:w-[80%] shadow-xl relative z-10 parallax-img-container">
+                        <img src="images/about-flower.jpg" onerror="this.src='https://images.unsplash.com/photo-1588667355097-7c703e22305a?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover parallax-img" alt="About">
+                    </div>
+                    <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-aura-rose/20 rounded-full blur-2xl z-0"></div>
+                </div>
+                
+                <div class="w-full md:w-1/2">
+                    <span class="text-aura-accent font-serif italic text-2xl mb-4 block">Наша философия</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-aura-dark mb-8 leading-tight">
+                        Мы не продаем цветы.<br> Мы создаем <span class="italic decoration-aura-rose underline decoration-1 underline-offset-4">моменты</span>.
+                    </h2>
+                    <p class="font-sans text-aura-dark/70 leading-relaxed mb-8 max-w-md">
+                        Каждый букет — это история. Мы используем редкие сорта, отказываемся от пластиковой упаковки в пользу шелка и крафта, чтобы передать естественную красоту природы.
+                    </p>
+                    <div class="grid grid-cols-2 gap-8 mb-8 border-t border-aura-dark/10 pt-8">
+                        <div>
+                            <h4 class="font-serif text-3xl text-aura-dark">100%</h4>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-500">Свежесть</p>
+                        </div>
+                        <div>
+                            <h4 class="font-serif text-3xl text-aura-dark">24/7</h4>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-500">Поддержка</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section id="about" class="py-20 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-flower-pink/30 -z-10 rounded-l-[100px]"></div>
-        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-            <div data-aos="fade-right">
-                <h2 class="font-serif text-4xl mb-6 text-flower-dark">Family Flowers — это семейное дело</h2>
-                <p class="text-gray-600 mb-6 leading-relaxed">
-                    Мы верим, что цветы — это не просто подарок, а способ передать эмоции. Каждый букет собирается нашими флористами вручную, с особым вниманием к деталям и свежести каждого цветка.
-                </p>
-                <div class="flex gap-4">
-                    <div class="text-center">
-                        <h4 class="font-serif text-3xl text-flower-green font-bold">5+</h4>
-                        <p class="text-xs uppercase text-gray-500">Лет опыта</p>
+    <section id="collection" class="py-24 bg-white relative">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-end mb-16">
+                <h2 class="font-serif text-4xl md:text-6xl text-aura-dark">Сезонная <span class="italic text-aura-rose">Коллекция</span></h2>
+                <span class="hidden md:block text-xs uppercase tracking-widest opacity-50">Выбор флориста</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-y-16 gap-x-8">
+                
+                <div class="group hover-trigger cursor-none" onclick="openModal('Букет Morning Bliss', '15 000 ₸', 'Нежные пионы и эвкалипт', 'flower1.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower1.jpg" onerror="this.src='https://images.unsplash.com/photo-1563241527-3005a963273e?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
                     </div>
-                    <div class="text-center border-l border-gray-200 pl-4">
-                        <h4 class="font-serif text-3xl text-flower-green font-bold">3000+</h4>
-                        <p class="text-xs uppercase text-gray-500">Букетов</p>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Morning Bliss</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Пионы • Эустома</p>
+                        </div>
+                        <span class="font-sans font-bold">15 000 ₸</span>
                     </div>
                 </div>
-            </div>
-            <div class="relative" data-aos="fade-left">
-                <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop" class="rounded-3xl shadow-xl w-full object-cover h-[400px]">
+
+                <div class="group hover-trigger md:translate-y-12 cursor-none" onclick="openModal('Букет Velvet Night', '22 000 ₸', 'Красные розы премиум', 'flower2.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower2.jpg" onerror="this.src='https://images.unsplash.com/photo-1587578848261-714013459c25?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Velvet Night</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Розы • Орхидеи</p>
+                        </div>
+                        <span class="font-sans font-bold">22 000 ₸</span>
+                    </div>
+                </div>
+
+                <div class="group hover-trigger cursor-none" onclick="openModal('Букет Pure White', '18 500 ₸', 'Белые гортензии', 'flower3.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower3.jpg" onerror="this.src='https://images.unsplash.com/photo-1525964667856-912df0ba4025?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Pure White</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Гортензии • Лилии</p>
+                        </div>
+                        <span class="font-sans font-bold">18 500 ₸</span>
+                    </div>
+                </div>
+
+                <div class="group hover-trigger cursor-none" onclick="openModal('Букет Wild Field', '12 000 ₸', 'Полевые цветы', 'flower4.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower4.jpg" onerror="this.src='https://images.unsplash.com/photo-1598379659367-1522f51eb923?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Wild Field</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Ромашки • Лаванда</p>
+                        </div>
+                        <span class="font-sans font-bold">12 000 ₸</span>
+                    </div>
+                </div>
+
+                 <div class="group hover-trigger md:translate-y-12 cursor-none" onclick="openModal('Букет Peach Sunset', '25 000 ₸', 'Персиковые ранункулюсы', 'flower5.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower5.jpg" onerror="this.src='https://images.unsplash.com/photo-1620668619623-a5c7f8a31308?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Peach Sunset</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Ранункулюсы</p>
+                        </div>
+                        <span class="font-sans font-bold">25 000 ₸</span>
+                    </div>
+                </div>
+
+                 <div class="group hover-trigger cursor-none" onclick="openModal('Букет Cotton Cloud', '16 000 ₸', 'Хлопок и сухоцветы', 'flower6.jpg')">
+                    <div class="overflow-hidden arch-image aspect-[3/4] mb-6 relative">
+                        <img src="images/flower6.jpg" onerror="this.src='https://images.unsplash.com/photo-1591196726296-e137b79d2b27?q=80&w=1000&auto=format&fit=crop'" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Flower">
+                        <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition duration-500 flex items-center justify-center">
+                            <span class="bg-white px-6 py-2 rounded-full text-xs uppercase tracking-widest">В корзину</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-start border-b border-aura-dark/10 pb-2">
+                        <div>
+                            <h3 class="font-serif text-xl italic group-hover:text-aura-accent transition">Cotton Cloud</h3>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-1">Хлопок • Лагурус</p>
+                        </div>
+                        <span class="font-sans font-bold">16 000 ₸</span>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <footer class="bg-flower-dark text-white py-16">
-        <div class="container mx-auto px-6 text-center">
-            <div class="font-serif text-3xl font-bold mb-4">Family Flowers</div>
-            <p class="text-white/60 mb-8 max-w-md mx-auto">Создаем красоту и доставляем радость вашим близким. Заказывайте свежие цветы с доставкой.</p>
-            
-            <div class="flex justify-center gap-6 mb-10">
-                <a href="https://instagram.com" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-flower-dark transition"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="https://wa.me/77008016460" class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-[#25D366] hover:border-[#25D366] transition"><i class="fab fa-whatsapp text-xl"></i></a>
+    <section class="py-24 bg-[#EAE6DF] text-center px-6">
+        <i class="fas fa-quote-left text-4xl text-aura-dark/20 mb-6"></i>
+        <h3 class="font-serif text-3xl md:text-5xl italic text-aura-dark max-w-4xl mx-auto leading-relaxed">
+            "Цветы — это стихи природы,<br> которые мы помогаем вам прочитать."
+        </h3>
+    </section>
+
+    <footer id="contacts" class="bg-aura-dark text-aura-base py-20 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-start gap-12">
+                <div>
+                    <h2 class="font-serif text-5xl mb-6">AURA.</h2>
+                    <p class="font-sans text-xs tracking-widest uppercase opacity-60 max-w-xs leading-loose">
+                        Студия авторской флористики.<br>
+                        Доставка эмоций по всему городу.
+                    </p>
+                </div>
+                
+                <div class="flex flex-col gap-6">
+                    <span class="text-xs uppercase tracking-widest opacity-40">Связаться с нами</span>
+                    <a href="tel:+77056053087" class="font-serif text-3xl md:text-4xl hover:text-aura-accent transition hover-trigger">+7 705 605 30 87</a>
+                    <div class="flex gap-4">
+                        <a href="https://wa.me/77056053087" class="hover-trigger w-12 h-12 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-aura-dark transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="hover-trigger w-12 h-12 border border-white/20 rounded-full flex items-center justify-center hover:bg-white hover:text-aura-dark transition"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
             </div>
             
-            <div class="border-t border-white/10 pt-8 text-xs text-white/40 flex flex-col md:flex-row justify-center gap-4">
-                <p>&copy; 2026 Family Flowers. Все права защищены.</p>
-                <a href="https://anukenn.vercel.app/" target="_blank" class="hover:text-white transition">Разработчик сайта</a>
+            <div class="border-t border-white/10 mt-16 pt-8 flex flex-col md:flex-row justify-between text-[10px] uppercase tracking-widest opacity-40">
+                <p>&copy; 2026 AURA FLOWERS.</p>
+                <p>Designed by Anuken</p>
             </div>
+        </div>
+        <div class="absolute -bottom-10 left-0 w-full text-center font-serif text-[15vw] leading-none text-white/5 pointer-events-none select-none italic">
+            Bloom
         </div>
     </footer>
 
-    <div id="details-overlay" onclick="closeDetails()" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] overlay transition-opacity duration-300"></div>
-    <div id="details-sidebar" class="fixed top-0 right-0 h-full w-[100%] md:w-[480px] bg-white z-[70] shadow-2xl sidebar sidebar-closed flex flex-col">
-        <button onclick="closeDetails()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:text-flower-dark z-10"><i class="fas fa-times"></i></button>
-        
-        <div class="flex-1 overflow-y-auto">
-            <div class="w-full h-[60vh] md:h-[500px] relative">
-                <img id="detail-img" src="" class="w-full h-full object-cover">
-            </div>
-            <div class="p-8">
-                <div class="flex justify-between items-start mb-2">
-                    <h2 id="detail-title" class="font-serif text-3xl text-flower-dark"></h2>
-                    <p id="detail-price" class="font-bold text-2xl text-flower-green whitespace-nowrap ml-4"></p>
+    <div id="product-modal" class="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm opacity-0 pointer-events-none transition duration-500 flex items-center justify-center px-4">
+        <div class="bg-aura-base p-2 w-full max-w-3xl shadow-2xl rounded-[2rem] transform scale-95 transition duration-500" id="modal-content">
+            <div class="flex flex-col md:flex-row h-full">
+                <div class="w-full md:w-1/2 h-64 md:h-[500px] overflow-hidden rounded-[1.5rem] relative">
+                    <img id="modal-img" src="" class="w-full h-full object-cover" alt="Detail">
                 </div>
-                <p id="detail-desc" class="text-gray-600 leading-relaxed mb-6"></p>
-                
-                <div class="bg-[#FCFBF9] p-5 rounded-xl border border-gray-100 mb-6">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Детали букета</h4>
-                    <div id="detail-specs" class="text-sm text-gray-600 space-y-2"></div>
+                <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 hover-trigger w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-md"><i class="fas fa-times"></i></button>
+                    
+                    <span class="text-xs uppercase tracking-widest text-gray-400 mb-2">Signature Collection</span>
+                    <h2 id="modal-title" class="font-serif text-4xl text-aura-dark mb-4 italic">Title</h2>
+                    <p id="modal-desc" class="font-sans text-sm text-gray-600 mb-8 leading-relaxed">Description...</p>
+                    <p id="modal-price" class="font-serif text-3xl mb-8">0 ₸</p>
+                    
+                    <a id="modal-link" href="#" class="hover-trigger w-full py-4 bg-aura-dark text-white text-center rounded-full uppercase text-xs tracking-[0.2em] hover:bg-aura-accent transition duration-300">
+                        Оформить в WhatsApp
+                    </a>
                 </div>
             </div>
-        </div>
-        <div class="p-6 border-t border-gray-100 bg-white">
-            <button id="detail-add-btn" class="w-full bg-flower-green hover:bg-flower-dark text-white py-4 rounded-xl font-bold text-lg transition flex justify-center items-center gap-2 shadow-lg hover:shadow-xl">
-                <span>В корзину</span> <i class="fas fa-shopping-basket"></i>
-            </button>
         </div>
     </div>
 
-    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[60] overlay transition-opacity duration-300"></div>
-    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-[90%] md:w-[450px] bg-white z-[70] shadow-2xl sidebar sidebar-closed flex flex-col">
-        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-[#FCFBF9]">
-            <h2 class="font-serif text-2xl text-flower-dark">Корзина</h2>
-            <button onclick="toggleCart()" class="text-gray-400 hover:text-flower-dark"><i class="fas fa-times text-xl"></i></button>
-        </div>
-        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
-        <div class="p-6 border-t border-gray-100 bg-white">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-gray-500 font-medium">Итого:</span>
-                <span id="cart-total" class="font-serif font-bold text-2xl text-flower-dark">0 ₸</span>
-            </div>
-            <button onclick="checkout()" class="w-full bg-flower-dark text-white py-4 rounded-xl font-bold uppercase tracking-widest hover:bg-flower-green transition shadow-lg flex items-center justify-center gap-2">
-                <span>Оформить (WhatsApp)</span> <i class="fab fa-whatsapp text-lg"></i>
-            </button>
-        </div>
-    </div>
-
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ once: true, offset: 50, duration: 1000 });
-        window.addEventListener('load', () => { setTimeout(() => { document.getElementById('preloader').style.opacity = '0'; setTimeout(() => { document.getElementById('preloader').style.display = 'none'; }, 500); }, 1000); });
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
 
-        // ЛОГИКА МЕНЮ
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const icon = document.querySelector('#hamburger-btn i');
+        // Preloader Logic
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
             
-            if (menu.classList.contains('menu-hidden')) {
-                menu.classList.remove('menu-hidden');
-                menu.classList.add('menu-visible');
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                menu.classList.add('menu-hidden');
-                menu.classList.remove('menu-visible');
-                icon.classList.add('fa-bars');
-                icon.classList.remove('fa-times');
-            }
-        }
+            // Анимация появления текста
+            tl.to('.reveal-text', { y: 0, duration: 1, ease: 'power4.out' })
+              .to('.fade-in', { opacity: 1, duration: 1 }, '-=0.5')
+              // Убираем прелоадер
+              .to('#preloader', { y: '-100%', duration: 1.2, ease: 'power2.inOut', delay: 0.5 });
 
-        // ЛОГИКА КОРЗИНЫ И ТОВАРОВ
-        const sidebarState = { cart: false, details: false };
-        let cart = JSON.parse(localStorage.getItem('familyFlowersCart')) || [];
-        updateCartUI();
+            // Анимация заголовка Hero после загрузки
+            gsap.from('.hero-reveal', {
+                y: 100, opacity: 0, duration: 1.5, stagger: 0.2, ease: 'power3.out', delay: 2.2
+            });
+        });
 
-        function toggleCart() {
-            if (sidebarState.details) closeDetails();
-            sidebarState.cart = !sidebarState.cart;
-            updateSidebar('cart-sidebar', 'cart-overlay', sidebarState.cart);
-        }
+        // Parallax Effect for Images
+        gsap.utils.toArray('.parallax-img-container').forEach(container => {
+            const img = container.querySelector('.parallax-img');
+            gsap.to(img, {
+                y: '20%', // Движение картинки внутри контейнера
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: container,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        });
 
-        function openDetails(card) {
-            if (sidebarState.cart) toggleCart();
+        // Custom Cursor Logic
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorCircle = document.querySelector('.cursor-circle');
+        const hoverTriggers = document.querySelectorAll('.hover-trigger');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursorDot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            gsap.to(cursorCircle, { x: e.clientX, y: e.clientY, duration: 0.3 });
+        });
+
+        // Hover effect for cursor
+        hoverTriggers.forEach(link => {
+            link.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+            link.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('product-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
+        const modalPrice = document.getElementById('modal-price');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalImg = document.getElementById('modal-img');
+        const modalLink = document.getElementById('modal-link');
+
+        function openModal(title, price, desc, img) {
+            modalTitle.innerText = title;
+            modalPrice.innerText = price;
+            modalDesc.innerText = desc;
             
-            // Данные
-            const title = card.querySelector('.product-title').innerText;
-            const price = card.querySelector('.product-price').innerText;
-            const imgSrc = card.querySelector('.hidden .data-img').innerText;
-            const desc = card.querySelector('.hidden .data-desc').innerHTML;
-            const specs = card.querySelector('.hidden .data-specs').innerHTML;
-            const priceRaw = parseInt(price.replace(/\D/g, ''));
-
-            document.getElementById('detail-title').innerText = title;
-            document.getElementById('detail-price').innerText = price;
-            document.getElementById('detail-img').src = imgSrc;
-            document.getElementById('detail-desc').innerHTML = desc;
-            document.getElementById('detail-specs').innerHTML = specs;
+            // Если картинки нет, ставим заглушку
+            modalImg.src = 'images/' + img;
+            modalImg.onerror = function() { this.src = 'https://images.unsplash.com/photo-1596562085799-4c1775791c25?q=80&w=1000&auto=format&fit=crop'; };
             
-            document.getElementById('detail-add-btn').onclick = () => {
-                addToCart(title, priceRaw);
-                closeDetails();
-                toggleCart();
-            };
+            modalLink.href = `https://wa.me/77056053087?text=Здравствуйте, хочу заказать: ${title}`;
 
-            sidebarState.details = true;
-            updateSidebar('details-sidebar', 'details-overlay', true);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
         }
 
-        function closeDetails() {
-            sidebarState.details = false;
-            updateSidebar('details-sidebar', 'details-overlay', false);
+        function closeModal() {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
         }
 
-        function updateSidebar(id, overlayId, isOpen) {
-            const el = document.getElementById(id);
-            const overlay = document.getElementById(overlayId);
-            if (isOpen) {
-                el.classList.remove('sidebar-closed');
-                el.classList.add('sidebar-open');
-                overlay.classList.add('active');
-                document.body.classList.add('no-scroll');
-            } else {
-                el.classList.remove('sidebar-open');
-                el.classList.add('sidebar-closed');
-                overlay.classList.remove('active');
-                document.body.classList.remove('no-scroll');
-            }
-        }
-
-        function addToCart(name, price) {
-            const existing = cart.find(item => item.name === name);
-            if (existing) existing.qty++;
-            else cart.push({ name, price, qty: 1 });
-            saveCart();
-        }
-
-        function changeQty(index, delta) {
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
-            saveCart();
-        }
-
-        function saveCart() {
-            localStorage.setItem('familyFlowersCart', JSON.stringify(cart));
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const container = document.getElementById('cart-items');
-            const totalEl = document.getElementById('cart-total');
-            const countBadge = document.getElementById('cart-count');
-            
-            const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-            countBadge.innerText = totalQty;
-            countBadge.style.transform = totalQty > 0 ? 'scale(1)' : 'scale(0)';
-
-            container.innerHTML = '';
-            if (cart.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-400"><i class="fas fa-leaf text-4xl mb-3 opacity-30"></i><p>Ваша корзина пуста</p></div>`;
-                totalEl.innerText = '0 ₸';
-            } else {
-                cart.forEach((item, index) => {
-                    container.innerHTML += `
-                        <div class="flex justify-between items-center bg-[#FCFBF9] p-3 rounded-xl border border-gray-100">
-                            <div>
-                                <div class="font-serif font-bold text-flower-dark">${item.name}</div>
-                                <div class="text-xs text-gray-500">${item.price.toLocaleString()} ₸</div>
-                            </div>
-                            <div class="flex items-center gap-3 bg-white px-2 py-1 rounded-full border border-gray-200">
-                                <button onclick="changeQty(${index}, -1)" class="w-6 text-gray-400 hover:text-flower-green">-</button>
-                                <span class="text-sm font-bold w-4 text-center">${item.qty}</span>
-                                <button onclick="changeQty(${index}, 1)" class="w-6 text-gray-400 hover:text-flower-green">+</button>
-                            </div>
-                        </div>`;
-                });
-                const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-                totalEl.innerText = total.toLocaleString() + ' ₸';
-            }
-        }
-
-        function checkout() {
-            if (cart.length === 0) return alert('Корзина пуста');
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            let msg = "Здравствуйте! Хочу заказать цветы:\n\n";
-            cart.forEach((item, i) => msg += `${i+1}. ${item.name} x${item.qty} - ${(item.price * item.qty).toLocaleString()} ₸\n`);
-            msg += `\n🌺 Итого: ${total.toLocaleString()} ₸`;
-            window.open(`https://wa.me/77008016460?text=${encodeURIComponent(msg)}`, '_blank');
-        }
+        // Close modal on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
     </script>
 </body>
 </html>
